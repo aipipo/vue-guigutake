@@ -29,7 +29,7 @@
 <script>
 export default {
   methods: {
-    goto(path){
+    goto (path) {
       this.$router.replace(path)
     }
   }
