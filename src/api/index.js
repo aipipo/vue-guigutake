@@ -17,3 +17,7 @@ export const reqLogOut = () => ajax(BASE + '/logout')
 //获取当前的user
 export const reqUserInfo = () => ajax(BASE + 'userinfo')
 
+export const reqShopInfo = () => ajax('/info')
+export const reqShopRatings = () => ajax('/ratings')
+export const reqShopGoods = () => ajax('/goods')
+

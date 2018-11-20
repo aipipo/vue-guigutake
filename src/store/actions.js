@@ -4,14 +4,20 @@ import {
   reqFoodCategorys,
   reqShops,
   reqLogOut,
-  reqUserInfo
+  reqUserInfo,
+  reqShopGoods,
+  reqShopInfo,
+  reqShopRatings
 } from '../api'
 import {
   RECEIVE_ADDRESS,
   REACT_CATEGORYS,
   REACT_SHOPS,
   RECEIVE_USER,
-  REACT_USER
+  REACT_USER,
+  RECEIVE_RATINGS,
+  RECEIVE_INFO,
+  RECEIVE_GOODS
 } from './mutation-types'
 
 export default {
@@ -61,5 +67,30 @@ export default {
     if (result.code === 0) {
       commit(REACT_USER)
     }
-  }
+  },
+
+  //异步获取商家信息
+  async getShopInfo ({commit}) {
+    const result = await reqShopInfo()
+    if (result.code === 0) {
+      const info = result.data
+      info.score = 3.5
+      commit(RECEIVE_INFO, {info})
+    }
+  },
+  //异步获取商家评价信息
+  async getShopRatings ({commit}) {
+    const result = await reqShopRatings()
+    if (result.code === 0) {
+      const ratings = result.data
+      commit(RECEIVE_RATINGS, {ratings})
+    }
+  },
+  async getShopGoods ({commit}) {
+    const result = await reqShopGoods()
+    if (result.code === 0) {
+      const goods = result.data
+      commit(RECEIVE_GOODS, {goods})
+    }
+  },
 }
