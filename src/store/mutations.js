@@ -2,7 +2,9 @@
 import {
   REACT_CATEGORYS,
   REACT_SHOPS,
-  RECEIVE_ADDRESS
+  RECEIVE_ADDRESS,
+  RECEIVE_USER,
+  REACT_USER
 } from './mutation-types'
 
 export default {
@@ -14,5 +16,11 @@ export default {
   },
   [REACT_SHOPS] (state, {shops}) {
     state.shops = shops
+  },
+  [RECEIVE_USER] (state, {user}) {
+    state.user = user
+  },
+  [REACT_USER] (state) {
+    state.user = {}
   }
 }

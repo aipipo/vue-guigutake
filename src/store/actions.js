@@ -2,12 +2,16 @@
 import {
   reqAddress,
   reqFoodCategorys,
-  reqShops
+  reqShops,
+  reqLogOut,
+  reqUserInfo
 } from '../api'
 import {
   RECEIVE_ADDRESS,
   REACT_CATEGORYS,
-  REACT_SHOPS
+  REACT_SHOPS,
+  RECEIVE_USER,
+  REACT_USER
 } from './mutation-types'
 
 export default {
@@ -36,6 +40,26 @@ export default {
     if (result.code === 0) {}
     const shops = result.data
     commit(REACT_SHOPS, {shops})
-  }
+  },
+ // 保存user的action
+  saveUser ({commit}, user) {
+    commit(RECEIVE_USER, {user})
+  },
+  // 获取当前用户信息的异步action
+  async getUserInfo ({commit}) {
+    const result = await reqUserInfo()
+    if (result.code === 0) {
+      const user = result.data
+      commit(RECEIVE_USER, {user})
+    }
 
+
+  },
+  //退出登录
+  async logout ({commit}, user) {
+    const result = await reqLogOut()
+    if (result.code === 0) {
+      commit(REACT_USER)
+    }
+  }
 }

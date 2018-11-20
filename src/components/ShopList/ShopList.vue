@@ -1,7 +1,10 @@
 <template>
   <div class="shop_container">
-    <ul class="shop_list">
-      <li class="shop_li border-1px" v-for="(shop, index) in shops" :key="index">
+    <ul class="shop_list" v-if="shops.length">
+      <li class="shop_li border-1px"
+          v-for="(shop, index) in shops"
+          @click="$router.push('/shop')"
+          :key="index">
         <a>
           <div class="shop_left">
             <img class="shop_img" :src="imageUrl+shop.image_path">
@@ -40,6 +43,20 @@
       </li>
 
     </ul>
+    <ul v-else>
+      <li>
+        <img src="./images/shop_back.svg" alt="back">
+      </li>
+      <li>
+        <img src="./images/shop_back.svg" alt="back">
+      </li>
+      <li>
+        <img src="./images/shop_back.svg" alt="back">
+      </li>
+      <li>
+        <img src="./images/shop_back.svg" alt="back">
+      </li>
+    </ul>
   </div>
 </template>
 <script>
@@ -60,14 +77,14 @@ export default {
 }
 </script>
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-  @import '../../common/stylus/mixins.styl'
+  @import "../../common/stylus/mixins.styl"
   .shop_container
     margin-bottom 50px
     .shop_list
       .shop_li
         bottom-border-1px(#f1f1f1)
         width 100%
-        > a
+        >a
           clearFix()
           display block
           box-sizing border-box
