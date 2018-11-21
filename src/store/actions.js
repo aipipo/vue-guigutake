@@ -74,7 +74,7 @@ export default {
     const result = await reqShopInfo()
     if (result.code === 0) {
       const info = result.data
-      info.score = 3.5
+     
       commit(RECEIVE_INFO, {info})
     }
   },
