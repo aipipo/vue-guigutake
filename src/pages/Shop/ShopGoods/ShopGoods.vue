@@ -1,68 +1,147 @@
 <template>
-  <div class="goods-wrap">
+  <div>
     <div class="goods">
-      <div class="menu-wrapper" ref="menuWrapper">
-        <ul>
-          <!--current-->   <!--currentIndex-->
-          <li class="menu-item" v-for="(good, index) in goods"
-              :key="index" :class="{current: currentIndex===index}" @click="clickMenu(index)">
+      <div class="menu-wrapper">
+        <ul ref="leftUl">
+          <!--current-->
+          <li class="menu-item " v-for="(good, index) in goods"
+              :key="index"
+              :class="{current: index === currentIndex}"
+              @click="clickItem(index)">
             <span class="text bottom-border-1px">
-              <img class="icon" v-if="good.icon" :src="good.icon">
+              <img class="icon" :src="good.icon" v-if="good.icon">
               {{good.name}}
             </span>
           </li>
         </ul>
       </div>
-      <div class="foods-wrapper" ref="foodsWrapper">
-        <ul>
-          <li class="food-list food-list-hook" v-for="(good, index) in goods" :key="index">
+      <div class="foods-wrapper">
+        <ul ref="RightUl">
+          <li class="food-list-hook" v-for="(good, index) in goods" :key="index">
             <h1 class="title">{{good.name}}</h1>
             <ul>
-              <li class="food-item bottom-border-1px" v-for="(food, index) in good.foods"
-                  :key="index" @click="showFood(food)">
+              <li class="food-item bottom-border-1px" v-for="(food, index) in good.foods" :key="index">
                 <div class="icon">
-                  <img width="57" height="57" :src="food.icon">
+                  <img width="57" height="57"
+                       :src="food.icon">
                 </div>
                 <div class="content">
                   <h2 class="name">{{food.name}}</h2>
                   <p class="desc">{{food.description}}</p>
                   <div class="extra">
                     <span class="count">月售{{food.sellCount}}份</span>
-                    <span>好评率{{food.rating}}%</span>
-                  </div>
+                    <span>好评率{{food.rating}}%</span></div>
                   <div class="price">
                     <span class="now">￥{{food.price}}</span>
-                    <span class="old" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="cartcontrol-wrapper">
-                    <cart-control :food="food" />
+                    CartControl组件
                   </div>
                 </div>
               </li>
+
             </ul>
           </li>
+
         </ul>
       </div>
-      <shop-cart />
     </div>
-    <food :food="food" ref="food" />
   </div>
 </template>
 <script>
 import {mapState} from 'vuex'
+import BScroll from 'better-scroll'
 export default {
+  data () {
+    return {
+      scrollY: 0,
+      tops: []
+    }
+  },
+  mounted () {
+    this.$store.dispatch('getShopGoods', () => {
+        this.$nextTick(() => {
+          this._initScrollbar()
+          this._initTops()
+
+        })
+    })
+
+  },
+  methods: {
+    _initScrollbar () {
+      //创建左侧列表滑动对象
+        this.leftScroll = new BScroll ('.menu-wrapper',{
+          click: true
+      })
+      //创建右侧列表滑动
+        this.rightScroll = new BScroll ('.foods-wrapper',{
+          probeType: 1,
+          click: true
+      })
+
+      this.rightScroll.on('scroll', ({x, y}) => {
+        this.scrollY = Math.abs(y)
+        console.log('scroll',x, y)
+      })
+      this.rightScroll.on('scrollEnd', ({x, y}) => {
+        this.scrollY = Math.abs(y)
+        console.log('scrollEnd',y)
+      })
+
+
+    },
+    _initTops () {
+      //获取所有li的top值，放到数组中
+      const tops = []
+      let top = 0
+      tops.push(top)
+      const lis = this.$refs.RightUl.getElementsByClassName('food-list-hook')
+      console.log(typeof lis)
+      Array.prototype.slice.call(lis).forEach(li => {
+        top += li.clientHeight
+        tops.push(top)
+      })
+      this.tops = tops
+      console.log('tops',tops)
+    },
+
+    clickItem (index) {
+      //得到目标位置的滚动坐标
+      const y = -this.tops[index]
+      //设置scrollY为目标值
+      this.scrollY = -y
+      this.rightScroll.scrollTo(0,y,500)
+    }
+  },
   computed: {
-    ...mapState(['goods'])
+    ...mapState(['goods']),
+    //计算出最新的下标
+    currentIndex () {
+      const {scrollY, tops}  = this
+        const index = tops.findIndex((top, index) => {
+        return scrollY>=top && scrollY<tops[index+1]
+      })
+      //如果下标变化了，
+      if (this.index!==index && this.leftScroll) {
+        this.index = index
+        console.log('leftUl---'+this.$refs)
+        const li =this.$refs.leftUl.children[index]
+        this.leftScroll.scrollToElement(li, 300)
+      }
+      return index
+    }
   }
 
 }
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
   @import "../../../common/stylus/mixins.styl"
+
   .goods
     display: flex
     position: absolute
-    top: 195px
+    top: 225px
     bottom: 46px
     width: 100%
     background: #fff;
